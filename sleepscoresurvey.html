@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Wellbeing Survey</title>
+
+<style>
+/* --- Electric Border Variables --- */
+:root {
+  --electric-border-color: #02A2F8;
+  --electric-light-color: oklch(from var(--electric-border-color) l c h);
+  --gradient-color: oklch(from var(--electric-border-color) 0.3 calc(c / 2) h / 0.4);
+  --color-neutral-900: oklch(0.185 0 0);
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color:transparent;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.svg-container {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.card-container {
+  padding: 2px;
+  border-radius: 24px;
+  position: relative;
+  background: linear-gradient(-30deg, var(--gradient-color), transparent, var(--gradient-color)),
+              linear-gradient(to bottom, var(--color-neutral-900), var(--color-neutral-900));
+}
+
+.border-outer {
+  border: 2px solid #02A2F8;
+  border-radius: 24px;
+  padding-right: 4px;
+  padding-bottom: 4px;
+}
+
+.main-card {
+  width: 500px;
+  min-height: 550px;
+  border-radius: 24px;
+  border: 2px solid var(--electric-border-color);
+  margin-top: -4px;
+  margin-left: -4px;
+  filter: url(#turbulent-displace);
+  background: rgba(0, 88, 136, 0.2);
+}
+
+.background-glow {
+  position: absolute;
+  width: 100%; height: 100%;
+  top: 0; left: 0;
+  border-radius: 24px;
+  filter: blur(32px);
+  transform: scale(1.1);
+  opacity: 0.3;
+  z-index: -1;
+  background: linear-gradient(-30deg, var(--electric-light-color), transparent, var(--electric-border-color));
+}
+
+.quiz-container {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  padding: 40px;
+  text-align: center;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Ensures vertical centering for results */
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+}
+
+#progress {
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.options::-webkit-scrollbar { width: 4px; }
+.options::-webkit-scrollbar-thumb { background: var(--electric-border-color); border-radius: 10px; }
+
+button.option-btn {
+  padding: 8px;
+  border: 1px solid rgba(2, 162, 248, 0.3);
+  border-radius: 8px;
+  background-color: rgba(18, 83, 118, 0.5);
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 0.9rem;
+}
+
+button.option-btn:hover {
+  background-color: var(--electric-border-color);
+  box-shadow: 0 0 10px var(--electric-border-color);
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+button.nav-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #10b981;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#prev-btn { background-color: #6366f1; }
+
+/* --- Centering Results --- */
+#score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  font-size: 1.2rem;
+  margin-top: 10px;
+  line-height: 1.4;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<main class="main-container">
+  <svg class="svg-container">
+    <defs>
+      <filter id="turbulent-displace" colorInterpolationFilters="sRGB" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise1" seed="1" />
+        <feOffset in="noise1" dx="0" dy="0" result="offsetNoise1">
+          <animate attributeName="dy" values="700; 0" dur="6s" repeatCount="indefinite" calcMode="linear" />
+        </feOffset>
+        <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise2" seed="1" />
+        <feOffset in="noise2" dx="0" dy="0" result="offsetNoise2">
+          <animate attributeName="dy" values="0; -700" dur="6s" repeatCount="indefinite" calcMode="linear" />
+        </feOffset>
+        <feComposite in="offsetNoise1" in2="offsetNoise2" result="part1" />
+        <feBlend in="part1" in2="part1" mode="color-dodge" result="combinedNoise" />
+        <feDisplacementMap in="SourceGraphic" in2="combinedNoise" scale="30" xChannelSelector="R" yChannelSelector="B" />
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="card-container">
+    <div class="inner-container">
+      <div class="border-outer">
+        <div class="main-card"></div>
+      </div>
+    </div>
+    <div class="background-glow"></div>
+
+    <div class="quiz-container">
+      <div id="progress"></div>
+      <h2 id="question"></h2>
+      <div class="options"></div>
+
+      <div class="nav-buttons">
+        <button id="prev-btn" class="nav-btn">Previous</button>
+        <button id="next-btn" class="nav-btn">Next</button>
+      </div>
+
+      <div id="score"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const quizData = [
+  {
+    question: "How many hours of sleep do you get per night?",
+    options: [
+      { display: "1 hour", value: 1 , mark: 1}, { display: "2 hours", value: 2 , mark: 2},
+      { display: "3 hours", value: 3 , mark: 3}, { display: "4 hours", value: 4 , mark: 4},
+      { display: "5 hours", value: 5 , mark: 5}, { display: "6 hours", value: 6 , mark: 6},
+      { display: "7 hours", value: 7 , mark: 7}, { display: "8 hours", value: 8 , mark: 8},
+      { display: "9 hours", value: 9 , mark: 9}, { display: "10 hours", value: 10 , mark: 8},
+      { display: "11 hours", value: 11 , mark: 7}, { display: "12 hours", value: 12 , mark: 6}
+    ]
+  },
+  {
+    question: "How many hours of screen time do you get per day (outside school)?",
+    options: [
+      { display: "1 hour", value: 1 , mark: 6}, { display: "2 hours", value: 2 , mark: 7},
+      { display: "3 hours", value: 3 , mark: 8}, { display: "4 hours", value: 4 , mark: 9},
+      { display: "5 hours", value: 5 , mark: 8}, { display: "6 hours", value: 6 , mark: 7},
+      { display: "7 hours", value: 7 , mark: 6}, { display: "8 hours", value: 8 , mark: 5},
+      { display: "9 hours", value: 9 , mark: 4}, { display: "10 hours", value: 10 , mark: 3},
+      { display: "11 hours", value: 11 , mark: 2}, { display: "12 hours", value: 12 , mark: 1}
+    ]
+  },
+  {
+    question: "How stressed do you feel during school weeks (1-10)?",
+    options: [
+      { display: "1", value: 1 , mark: 7}, { display: "2", value: 2 , mark: 8},
+      { display: "3", value: 3 , mark: 9}, { display: "4", value: 4 , mark: 8},
+      { display: "5", value: 5 , mark: 7}, { display: "6", value: 6 , mark: 6},
+      { display: "7", value: 7 , mark: 5}, { display: "8", value: 8 , mark: 4},
+      { display: "9", value: 9 , mark: 3}, { display: "10", value: 10 , mark: 2}
+    ]
+  }
+];
+
+let currentQuestion = 0;
+let totalValue = 0;
+let answers = new Array(quizData.length).fill(null);
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.querySelector(".options");
+const nextBtn = document.getElementById("next-btn");
+const prevBtn = document.getElementById("prev-btn");
+const scoreEl = document.getElementById("score");
+const progressEl = document.getElementById("progress");
+
+function loadQuestion() {
+  optionsEl.innerHTML = "";
+  scoreEl.innerHTML = "";
+  const current = quizData[currentQuestion];
+  questionEl.innerText = current.question;
+  progressEl.innerText = `Question ${currentQuestion + 1} of ${quizData.length}`;
+
+  prevBtn.style.visibility = currentQuestion === 0 ? "hidden" : "visible";
+  nextBtn.style.visibility = answers[currentQuestion] !== null ? "visible" : "hidden";
+
+  current.options.forEach(opt => {
+    const button = document.createElement("button");
+    button.className = "option-btn";
+    button.innerText = opt.display;
+    button.mark = opt.mark;
+    button.addEventListener("click", () => selectOption(button, opt.mark));
+    if (answers[currentQuestion] === opt.mark) {
+      button.style.backgroundColor = "#10b981";
+      button.style.borderColor = "#ffffff";
+    }
+    optionsEl.appendChild(button);
+  });
+}
+
+function selectOption(selectedButton, mark) {
+  if (answers[currentQuestion] !== null) {
+    totalValue -= answers[currentQuestion];
+  }
+  answers[currentQuestion] = mark;
+  totalValue += mark;
+
+  const buttons = document.querySelectorAll(".option-btn");
+  buttons.forEach(btn => {
+    btn.style.backgroundColor = "rgba(18, 83, 118, 0.5)";
+    btn.style.borderColor = "rgba(2, 162, 248, 0.3)";
+  });
+
+  selectedButton.style.backgroundColor = "#10b981";
+  selectedButton.style.borderColor = "#ffffff";
+  nextBtn.style.visibility = "visible";
+}
+
+nextBtn.addEventListener("click", () => {
+  if (currentQuestion < quizData.length - 1) {
+    currentQuestion++;
+    loadQuestion();
+  } else {
+    showResults();
+  }
+});
+
+prevBtn.addEventListener("click", () => {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion();
+  }
+});
+
+function showResults() {
+  questionEl.innerText = "Survey Completed!";
+  optionsEl.innerHTML = "";
+  progressEl.innerText = "";
+  nextBtn.style.display = "none";
+  prevBtn.style.display = "none";
+  
+  // Cleanly formatted and centered output
+  scoreEl.innerHTML = `
+    <div>TOTAL SURVEY SCORE: <strong>${totalValue}</strong></div>
+    <div style="font-size: 0.9rem; opacity: 0.8;">INSERT YOUR SCORE INTO THE GAUGE BELOW</div>
+    <button id="restart-btn" class="nav-btn" style="margin-top: 10px;">Restart Survey</button>
+  `;
+  
+  document.getElementById("restart-btn").addEventListener("click", () => {
+    location.reload();
+  });
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
